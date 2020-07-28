@@ -98,5 +98,7 @@ void DataRequest::on_pushButton_clicked()
 
 void DataRequest::on_pushButton_2_clicked()
 {
+   failEnd();
+   setClicked();
    this->close();
 }
