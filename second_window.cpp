@@ -12,3 +12,4 @@ second_window::~second_window()
 {
     delete ui;
 }
+
