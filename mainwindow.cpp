@@ -687,7 +687,6 @@ void MainWindow::on_actionSave_data_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
                                                     tr("Text Files (*.txt)"));
-
     if (fileName != "") {
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
@@ -749,7 +748,7 @@ void MainWindow::on_InputAndStart_clicked()
         return;
     }
     //MainWindow::on_actionRun_triggered();
-    qDebug() << "Num = "<< NUM_REQS << " ;";
+
 }
 
 bool MainWindow::on_actionCorrect_data_triggered()

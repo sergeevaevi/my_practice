@@ -465,26 +465,6 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
     printf("|                            output                         |\r\n");
     printf("=============================================================\r\n");
 
-    //    for (j = 0; j < NUM_WINS; j++) {
-    //        for (i = 0; i < NUM_REQS; i++) {
-    //            if(j < C[i].num_wins){
-    //                sprintf(szbuff, "C%u%u=%u\t", i + 1, j + 1, C_final[i].Win[j].is_final);
-    //            }
-    //            else{
-    //                sprintf(szbuff, "-----\t");
-    //            }
-    //            printf(szbuff);
-    //        }
-    //        printf("\r\n");
-    //    }
-    //    printf("===========================================================\r\n");
-
-    //    for (i = 0; i < NUM_REQS; i++) {
-    //        sprintf(szbuff, "Summ=%u\t", qqq[i]);
-    //        printf(szbuff);
-    //    }
-    //    printf("\r\n");
-
     QVector<QLabel*> labels;
     int count = 0;
     for(int j = 0; j < NUM_WINS;j++){
@@ -508,44 +488,11 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
         label->setText("Summ="+QString::number(qqq[k]));
         label->setObjectName("label_sum"+QString::number(count));
         ui->gridLayout->addWidget(label, NUM_WINS+1, k, 1, 1);
-
-        //        sprintf(szbuff, "Summ=%u\t", qqq[k]);
-        //        printf(szbuff);
         count++;
         labels.push_back(label);
     }
 
-    //        QFile file("output.txt");
-    //        if (file.open(QIODevice::WriteOnly))
-    //        {
-    //            QTextStream stream(&file);
-    //            for(int j = 0; j < NUM_WINS;j++){
-    //                for(int i = 0; i < NUM_REQS;i++){
-    //                    QString str;
-    //                    if(j < C[i].num_wins){
-    //                        str = "C["+QString::number(i + 1)+","+QString::number(j + 1)+"]="+QString::number(C_final[i].Win[j].is_final)+"\t";
-    //                    }
-    //                    else{
-    //                        str = "-----\t\t";
-    //                    }
 
-    //                    stream << str;
-
-    //                }
-    //                stream << "\r\n";
-    //            }
-    //            for (k = 0; k < NUM_REQS; k++) {
-
-    //                QString str = "Summ="+QString::number(qqq[k])+"\t\t";
-    //                stream << str;
-
-    //            }
-    //            file.close();
-    //            if (stream.status() != QTextStream::Ok)
-    //            {
-    //                qDebug() << "Ошибка записи файла";
-    //            }
-    //        }
 
     for (i = 0; i < NUM_REQS; i++) {
         free(C[i].Win);
