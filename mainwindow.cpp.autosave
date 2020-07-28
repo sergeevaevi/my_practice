@@ -597,7 +597,7 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
     main_func(ui);
-
+    
 }
 
 MainWindow::~MainWindow()
@@ -619,7 +619,7 @@ bool MainWindow::on_actionLoad_data_triggered()
         {
             str = stream.readLine();
             int j = 0;
-
+            
             while ((j = str.indexOf(" ", j)) != -1) {
                 qDebug() << "Found " " tag at index position" << j;
                 ++j;
@@ -634,10 +634,10 @@ bool MainWindow::on_actionLoad_data_triggered()
         file.close();
         return true;
         //        time tt{30, 23, 5, 10, 7, 2020};
-
+        
         //        auto timeU = xtmtot(&tt);
         //        qDebug() << timeU;
-
+        
     }
     return false;
 }
@@ -650,71 +650,70 @@ void MainWindow::on_actionSave_triggered()
         QTextStream stream(&file);
         auto labels = main_func(ui);
         int count = 0;
-
+        
         for(int j = 0; j < NUM_WINS;j++){
             for(int i = 0; i < NUM_REQS;i++){
-
+                
                 QString str = labels[count]->text()+"\t";
                 if(str == "-----\t"){
                     str+="\t";
                 }
                 stream << str;
                 count++;
-
+                
             }
             stream << "\r\n";
-
+            
         }
         for (int k = 0; k < NUM_REQS; k++) {
-
+            
             QString str = labels[count]->text()+"\t\t";
             count++;
             stream << str;
-
+            
         }
-
+        
         file.close();
         if (stream.status() != QTextStream::Ok)
         {
             qDebug() << "Error";
         }
     }
-
-
+    
+    
 }
 
 void MainWindow::on_actionSave_data_triggered()
 {
     QString fileName = QFileDialog::getSaveFileName(this, tr("Save File"), "",
                                                     tr("Text Files (*.txt)"));
-
     if (fileName != "") {
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
             QTextStream stream(&file);
             auto labels = main_func(ui);
             int count = 0;
-
+            
             for(int j = 0; j < NUM_WINS;j++){
                 for(int i = 0; i < NUM_REQS;i++){
-
+                    
                     QString str = labels[count]->text()+"\t";
                     if(str == "-----\t"){
                         str+="\t";
                     }
                     stream << str;
                     count++;
-
+                    
                 }
                 stream << "\r\n";
-
+                
             }
             for (int k = 0; k < NUM_REQS; k++) {
-
+                
                 QString str = labels[count]->text()+"\t\t";
                 count++;
                 stream << str;
-
+                
             }
             file.close();
             if (stream.status() != QTextStream::Ok)
@@ -749,7 +748,7 @@ void MainWindow::on_InputAndStart_clicked()
         return;
     }
     //MainWindow::on_actionRun_triggered();
-    qDebug() << "Num = "<< NUM_REQS << " ;";
+    
 }
 
 bool MainWindow::on_actionCorrect_data_triggered()
