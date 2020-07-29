@@ -205,6 +205,39 @@ void printConflict(Conflict* C){
 }
 
 
+void addLabels(Ui::MainWindow * ui, Contact * C, Contact * C_final, int * qqq, QVector<QLabel*>& labels){
+    //ui->front_img->hide();
+//    QVector<QLabel*> labels;
+    int count = 0;
+    for(int j = 0; j < NUM_WINS;j++){
+        for(int i = 0; i < NUM_REQS;i++){
+
+            QLabel * label = new QLabel(ui->gridLayoutWidget);
+            label->setStyleSheet("color: AliceBlue; padding: 25px;");
+
+            if(j < C[i].num_wins){
+                label->setText("C["+QString::number(i + 1)+","+QString::number(j + 1)+"]="+QString::number(C_final[i].Win[j].is_final));
+            }
+            else{
+                label->setText("-----");
+            }
+            label->setObjectName("label_"+QString::number(count));
+            ui->gridLayout->addWidget(label, j, i, 1, 1);
+            count++;
+            labels.push_back(label);
+        }
+    }
+    for (int k = 0; k < NUM_REQS; k++) {
+        QLabel * label = new QLabel(ui->gridLayoutWidget);
+        label->setStyleSheet("color: AliceBlue;padding: 25px;");
+        label->setText("Summ="+QString::number(qqq[k]));
+        label->setObjectName("label_sum"+QString::number(count));
+        ui->gridLayout->addWidget(label, NUM_WINS+1, k, 1, 1);
+        count++;
+        labels.push_back(label);
+    }
+}
+
 QVector<QLabel*> main_func(Ui::MainWindow * ui) {
     int *WINDOWS_BY_REQUEST;
 
@@ -227,6 +260,7 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
     //------------------
 
     ///mem alloc and how stupid I am?
+    ///
     Contact * C = (Contact*)malloc(NUM_REQS * sizeof(Contact));
     //C[NUM_REQS]; Cij = F( Ri, t_AOS, t_LOS, G ); // j contact windows of request Ri
     for (i = 0; i < NUM_REQS; i++) {
@@ -460,40 +494,11 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
         summ = 0;
     }
 
-    printf("=============================================================\r\n");
-    printf("|                FEFU Schedule optimizator                  |\r\n");
-    printf("|                            output                         |\r\n");
-    printf("=============================================================\r\n");
-
+    ui->front_img->hide();
     QVector<QLabel*> labels;
-    int count = 0;
-    for(int j = 0; j < NUM_WINS;j++){
-        for(int i = 0; i < NUM_REQS;i++){
+    addLabels(ui, C, C_final, qqq, labels);
 
-            QLabel * label = new QLabel(ui->gridLayoutWidget);
-            if(j < C[i].num_wins){
-                label->setText("C["+QString::number(i + 1)+","+QString::number(j + 1)+"]="+QString::number(C_final[i].Win[j].is_final));
-            }
-            else{
-                label->setText("-----");
-            }
-            label->setObjectName("label_"+QString::number(count));
-            ui->gridLayout->addWidget(label, j, i, 1, 1);
-            count++;
-            labels.push_back(label);
-        }
-    }
-    for (k = 0; k < NUM_REQS; k++) {
-        QLabel * label = new QLabel(ui->gridLayoutWidget);
-        label->setText("Summ="+QString::number(qqq[k]));
-        label->setObjectName("label_sum"+QString::number(count));
-        ui->gridLayout->addWidget(label, NUM_WINS+1, k, 1, 1);
-        count++;
-        labels.push_back(label);
-    }
-
-
-
+    // free all memory
     for (i = 0; i < NUM_REQS; i++) {
         free(C[i].Win);
     }
