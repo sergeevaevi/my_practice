@@ -1,5 +1,5 @@
 #include <time.h>
-
+#include <QDebug>
 #define _TBIAS_DAYS		((70 * (u32_t)365) + 17)
 #define _TBIAS_SECS		(_TBIAS_DAYS * (xtime_t)86400)
 #define	_TBIAS_YEAR		1900
@@ -9,6 +9,7 @@ const s16_t	lmos[] = {0, 31, 60, 91, 121, 152, 182, 213, 244, 274, 305, 335};
 const s16_t	mos[] = {0, 31, 59, 90, 120, 151, 181, 212, 243, 273, 304, 334};
 
 #define	Daysto32(year, mon)	(((year - 1) / 4) + MONTAB(year)[mon])
+
 
 /////////////////////////////////////////////////////////////////////
 
@@ -75,4 +76,9 @@ void xttotm(struct time *t, xtime_t secsarg)
     for (mon = 12; days < pm[--mon]; );
     t->tm_mon = mon + 1;
     t->tm_mday = days - pm[mon] + 1;
+}
+
+void print_time(time *t)
+{
+    qDebug() << t->tm_mday << "/" << t->tm_mon << "/" << t->tm_year << " " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec;
 }

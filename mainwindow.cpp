@@ -1,10 +1,11 @@
 #include "mainwindow.h"
 #include "ui_mainwindow.h"
-#include "second_window.h"
+#include "structure.h"
 #include "datarequest.h"
 #include <QErrorMessage>
 #include <QMessageBox>
 #include <main_function.h>
+#include <search_conflict_algorithm.h>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -38,23 +39,17 @@ void findAllSubstrs(QString &str, QString sym, QVector<QVector<QString>> &time){
     QVector<QString> schedule;
     int k = 0, j = 0;
     while ((j = str.indexOf(sym, j)) != -1) {
-        //                qDebug() << "J Found , tag at index position" << j;
         k = j+1;
         if((k = str.indexOf(sym, k)) != -1){
-            //                    qDebug() << "To J K Found , tag at index position" << k;
             schedule.push_back(str.mid(j+1, k-j-1));
-            //                    qDebug() << str.mid(j+1, k-j-1);
             k++;
         }
         if(k == -1){
-            //                    qDebug() << "To J Found , tag at index position" << k;
             schedule.push_back(str.mid(j+1, str.length()));
-            //                    qDebug() << str.mid(j+1, str.length());
             k++;
         }
         j = j+1;
     }
-    //            qDebug() << str;
     time.push_back(schedule);
 }
 
@@ -63,69 +58,20 @@ void findAllSubstrsInStream(QString sym, QVector<QVector<QString>> &time, QTextS
     while (!stream.atEnd()){
         str = stream.readLine();
         findAllSubstrs(str, sym, time);
-//        int k, j = 1;
-//        QVector<QString> schedule;
-
-//        while ((j = str.indexOf(sym, j)) != -1) {
-//            //                qDebug() << "J Found , tag at index position" << j;
-//            k = j+1;
-//            if((k = str.indexOf(sym, k)) != -1){
-//                //                    qDebug() << "To J K Found , tag at index position" << k;
-//                schedule.push_back(str.mid(j+1, k-j-1));
-//                //                    qDebug() << str.mid(j+1, k-j-1);
-//                k++;
-//            }
-//            if(k == -1){
-//                //                    qDebug() << "To J Found , tag at index position" << k;
-//                schedule.push_back(str.mid(j+1, str.length()));
-//                //                    qDebug() << str.mid(j+1, str.length());
-//                k++;
-//            }
-//            j = j+1;
-//        }
-//        //            qDebug() << str;
-//        time.push_back(schedule);
     }
 }
 
 
 bool MainWindow::on_actionLoad_data_triggered()
 {
-    QVector<QVector<QString>> time;
+    QVector<QVector<QString>> all_info;
     QString fileName = QFileDialog::getOpenFileName(this,
                                                     tr("Open DataFile"), QDir::root().path() , tr("Image Files (*.txt)"));
     QFile file (fileName);
     if(file.open(QIODevice::ReadOnly))
     {
         QTextStream stream(&file);
-        findAllSubstrsInStream(",", time, stream);
-        //        QString str;
-        //        while (!stream.atEnd())
-        //        {
-        //            str = stream.readLine();
-        //            int k, j = 1;
-        //            QVector<QString> schedule;
-
-        //            while ((j = str.indexOf(",", j)) != -1) {
-        ////                qDebug() << "J Found , tag at index position" << j;
-        //                k = j+1;
-        //                if((k = str.indexOf(",", k)) != -1){
-        ////                    qDebug() << "To J K Found , tag at index position" << k;
-        //                    schedule.push_back(str.mid(j+1, k-j-1));
-        ////                    qDebug() << str.mid(j+1, k-j-1);
-        //                    k++;
-        //                }
-        //                if(k == -1){
-        ////                    qDebug() << "To J Found , tag at index position" << k;
-        //                    schedule.push_back(str.mid(j+1, str.length()));
-        ////                    qDebug() << str.mid(j+1, str.length());
-        //                    k++;
-        //                }
-        //                j = j+1;
-        //            }
-        ////            qDebug() << str;
-        //            time.push_back(schedule);
-
+        findAllSubstrsInStream(",", all_info, stream);
 
         if(stream.status()!= QTextStream::Ok)
         {
@@ -134,22 +80,68 @@ bool MainWindow::on_actionLoad_data_triggered()
         }
         file.close();
 
-        for(auto s : time){
-            qDebug() << "Begin";
-            qDebug() << "  ;  " << s;
-            qDebug() << "End";
-        }
-        QVector<QVector<QString>> times;
-        for(auto t : time){
-            int n = 0;
+        //        for(auto s : all_info){
+        //            qDebug() << "Begin";
+        //            qDebug() << "  ;  " << s;
+        //            qDebug() << "End";
+        //        }
+        QVector<QVector<QString>> pair_of_times;
+        int n = 0;
+        for(auto t : all_info){
             for(auto s : t){
-                if(n < 2){
-                    findAllSubstrs(s, " ", times);
-
+                if(n == 4){
+                    n = 0;
                 }
+                if(n < 2){
+                    QString str = " " + s;
+                    findAllSubstrs(str, " ", pair_of_times);
+                }
+                n++;
             }
         }
+        QVector<QVector<QString>> hours;
+        for(auto t : pair_of_times){
+            QString str = " :" + t[3];
+//            qDebug() << str;
+            findAllSubstrs(str, ":", hours);
+        }
 
+//        for(auto s : hours){
+//            qDebug() << "in";
+//            qDebug() << "    " << s;
+//            qDebug() << "out";
+//        }
+        map<QString, int> name_num;
+        int asset_num = 0, pair_count = 0;
+        vector<Сollision> collision;
+        for(auto t : all_info){
+            Сollision c;
+            c.setDuration((int)t[2].toDouble());
+            c.setAssetName(t[3]);
+            auto res = name_num.insert(make_pair(t[3], asset_num));
+            if(res.second){
+                c.setAssetNum(asset_num);
+                asset_num++;
+            }
+            QString day = pair_of_times[pair_count][0];
+            QString month = pair_of_times[pair_count][1];
+            QString year = pair_of_times[pair_count][2];
+            QString hour = hours[pair_count][0];
+            QString min = hours[pair_count][1];
+            QString sec = hours[pair_count][2];
+            c.setTimeAccessStart(day, month, year, hour, min, sec);
+            pair_count++;
+            day = pair_of_times[pair_count][0];
+            month = pair_of_times[pair_count][1];
+            year = pair_of_times[pair_count][2];
+            hour = hours[pair_count][0];
+            min = hours[pair_count][1];
+            sec = hours[pair_count][2];
+            c.setTimeAccessEnd(day, month, year, hour, min, sec);
+            pair_count++;
+            collision.push_back(c);
+        }
+        search_conflicts(collision);
         return true;
 
         //        time tt{30, 23, 5, 10, 7, 2020};

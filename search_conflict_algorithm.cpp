@@ -1,22 +1,45 @@
 #include <search_conflict_algorithm.h>
+#include <QDebug>
+
+std::map<QString, s32_t> months_lit{
+    {"Jun", 1}, {"Feb", 2}, {"Mar", 3}, {"Apr", 4}, {"May", 5}, {"June", 6},
+    {"July", 7}, {"Aug", 8}, {"Sept", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12},
+};
 
 bool checkForCollisions(Сollision i, Сollision j){
+    time t;
     long max_end_time_i = i.getTimeAccessEnd() + i.getDuration();
+
     long max_end_time_j = j.getTimeAccessEnd() + j.getDuration();
+
     long min_end_time_j = j.getTimeAccessStart() + j.getDuration();
+
     long min_end_time_i = i.getTimeAccessStart() + i.getDuration();
+
     bool different_time_l = (i.getTimeAccessStart() < j.getTimeAccessStart() && i.getTimeAccessEnd() < j.getTimeAccessEnd());
     bool different_time_m = (i.getTimeAccessStart() > min_end_time_j && i.getTimeAccessEnd() > max_end_time_j );
     bool not_collided_l = (min_end_time_i < j.getTimeAccessStart()) &&  (max_end_time_i < j.getTimeAccessEnd()) ;
-    bool not_collided_m = (min_end_time_i < min_end_time_j) &&  (max_end_time_i < max_end_time_j) ;
+    bool not_collided_m = (min_end_time_i > min_end_time_j) &&  (max_end_time_i > max_end_time_j) ;
     if((different_time_l && not_collided_l) || (different_time_m && not_collided_m)){
+
         return true;
     }
+//    xttotm(&t, min_end_time_i);
+//    print_time(&t);
+//    xttotm(&t, max_end_time_i);
+//    print_time(&t);
+//    xttotm(&t, min_end_time_j);
+//    print_time(&t);
+//    xttotm(&t, max_end_time_j);
+//    print_time(&t);
     return false;
 }
 
-void search_conflicts(Conflict * ConflictWinSubset, Contact * C, int *WINDOWS_BY_REQUEST)
+void search_conflicts(vector<Сollision> collisions/*Conflict * ConflictWinSubset, Contact * C, int *WINDOWS_BY_REQUEST*/)
 {
+    int WINDOWS_BY_REQUEST[100];
+    Conflict ConflictWinSubset[100];
+    Contact C[100];
     /*
     WINDOWS_BY_REQUEST[0]=13;
     WINDOWS_BY_REQUEST[1]=14;
@@ -131,10 +154,12 @@ void search_conflicts(Conflict * ConflictWinSubset, Contact * C, int *WINDOWS_BY
     ConflictWinSubset[24].lpConfW[1] = &C[1].Win[13];
 */
     Сollision d;
-    vector<Сollision> collisions;// = parseFile();
+    qDebug() << collisions.size();
+//    vector<Сollision> collisions;// = parseFile();
     for(auto c: collisions){
         WINDOWS_BY_REQUEST[c.getAssetNum()]++;
     }
+    time t;
     int conflicts_num = 0;
     for(int i = 0; i < collisions.size(); i++){
         int collision_num = 0;
@@ -142,12 +167,30 @@ void search_conflicts(Conflict * ConflictWinSubset, Contact * C, int *WINDOWS_BY
             if(i == j){
                 continue;
             }
-            if(checkForCollisions(collisions[i], collisions[j])){
-                ConflictWinSubset[conflicts_num].lpConfW[collision_num] = &C[collisions[i].getAssetNum()].Win[collisions[i].number_of_collisions];
+            //////////
+//            if(j == 10){
+//                break;
+//            }
+            ////////////
+            if(!checkForCollisions(collisions[i], collisions[j])){
+                qDebug() << "ConflictWinSubset[" << collisions[i].getAssetNum() <<  "].lpConfW[" << collision_num <<
+                            "]  ==>  &C[" << collisions[i].getAssetNum() << "].Win[" << collisions[i].number_of_collisions << "];" <<
+                            collisions[i].getAssetName() << collisions[j].getAssetName();
+//                xttotm(&t, collisions[i].getTimeAccessStart());
+//                print_time(&t);
+//                xttotm(&t, collisions[j].getTimeAccessStart());
+//                print_time(&t);
+                qDebug() << "============";
+               // ConflictWinSubset[collisions[i].getAssetNum()].lpConfW[collision_num] = &C[collisions[i].getAssetNum()].Win[collisions[i].number_of_collisions];
                 collision_num++;
                 collisions[i].number_of_collisions++;
             }
         }
+        /////
+//        if(i == 10){
+//            break;
+//        }
+        //////
         conflicts_num++;
     }
 }
@@ -167,7 +210,7 @@ int Сollision::getDuration()
     return duration;
 }
 
-string Сollision::getAssetName()
+QString Сollision::getAssetName()
 {
     return asset_name;
 }
@@ -175,6 +218,28 @@ string Сollision::getAssetName()
 void Сollision::setTimeAccessStart(xtime_t tm)
 {
     access_start = tm;
+}
+
+void Сollision::setTimeAccessEnd(QString day, QString month, QString year, QString hour, QString min, QString sec)
+{
+    int month_num = 0;
+    auto find_month_int = months_lit.find(month);
+    if(find_month_int != months_lit.end()){
+        month_num = find_month_int->second;
+    }else{
+        qDebug() << "Error";
+    }
+    time t;
+    t.tm_mday = day.toInt();
+    t.tm_mon = month_num;
+    t.tm_year = year.toInt();
+    t.tm_hour = hour.toInt();
+    t.tm_min = min.toInt();
+    t.tm_sec = sec.toInt();
+    xtime_t timeU = xtmtot(&t);
+    access_end = timeU;
+   // qDebug() << timeU;
+
 }
 
 void Сollision::setTimeAccessEnd(xtime_t tm)
@@ -189,6 +254,11 @@ void Сollision::setDuration(int dur)
 
 void Сollision::setAssetName(string nm)
 {
+
+}
+
+void Сollision::setAssetName(QString nm)
+{
     asset_name = nm;
 }
 
@@ -201,3 +271,31 @@ int Сollision::getAssetNum()
 {
     return asset_num;
 }
+
+void Сollision::setTimeAccessStart(QString day, QString month, QString year, QString hour, QString min, QString sec)
+{
+    int month_num = 0;
+    auto find_month_int = months_lit.find(month);
+    if(find_month_int != months_lit.end()){
+        month_num = find_month_int->second;
+    }else{
+        qDebug() << "Error";
+    }
+    time t;
+    t.tm_mday = day.toInt();
+    t.tm_mon = month_num;
+    t.tm_year = year.toInt();
+    t.tm_hour = hour.toInt();
+    t.tm_min = min.toInt();
+    t.tm_sec = (long)sec.toDouble();
+    xtime_t timeU = xtmtot(&t);
+    access_start = timeU;
+//    qDebug() << t.tm_mday << day;
+//    qDebug() <<t.tm_mon << month;
+//    qDebug() <<t.tm_year << year;
+//    qDebug() <<t.tm_hour << hour;
+//    qDebug() <<t.tm_min << min;
+//    qDebug() <<t.tm_sec << sec;
+//    qDebug() << timeU;
+}
+

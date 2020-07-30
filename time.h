@@ -4,6 +4,8 @@
 
 #include <cstddef>
 #include <cstddef>
+#include <map>
+#include <string>
 typedef	unsigned short			u16_t;
 typedef	unsigned long			u32_t;
 typedef	signed short			s16_t;
@@ -32,7 +34,7 @@ struct time
 
 void xttotm(struct time *t, xtime_t secs);
 xtime_t xtmtot(struct time *t);
-
+void print_time(struct time *t);
 
 
 #endif // TIME_H

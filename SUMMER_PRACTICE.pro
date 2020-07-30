@@ -21,7 +21,7 @@ SOURCES += \
     main_function.cpp \
     mainwindow.cpp \
     search_conflict_algorithm.cpp \
-    second_window.cpp \
+    structure.cpp \
     time.cpp
 
 HEADERS += \
@@ -29,13 +29,13 @@ HEADERS += \
     main_function.h \
     mainwindow.h \
     search_conflict_algorithm.h \
-    second_window.h \
+    structure.h \
     time.h
 
 FORMS += \
     datarequest.ui \
     mainwindow.ui \
-    second_window.ui
+    structure.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
