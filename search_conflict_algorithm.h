@@ -27,7 +27,7 @@
 
 
 using namespace std;
-class Сollision{
+class Schedule{
 private:
     xtime_t access_start;
     xtime_t access_end;
@@ -48,9 +48,9 @@ public:
     void setAssetName(string nm);
     void setAssetName(QString nm);
     void setAssetNum(int nm);
-    int number_of_collisions = 0;
+    int number_of_windows = 0;
 };
 
-void search_conflicts(vector<Сollision> collisions);
+void search_conflicts(vector<Schedule> all_satellites);
 
 #endif // SEARCH_CONFLICT_ALGORITHM_H

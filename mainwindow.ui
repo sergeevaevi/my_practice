@@ -58,8 +58,8 @@
    <widget class="QPushButton" name="InputAndStart">
     <property name="geometry">
      <rect>
-      <x>350</x>
-      <y>510</y>
+      <x>360</x>
+      <y>520</y>
       <width>361</width>
       <height>61</height>
      </rect>
@@ -129,11 +129,11 @@
     </rect>
    </property>
    <property name="styleSheet">
-    <string notr="true">color: white; background-color: идфсл</string>
+    <string notr="true">color: white; background-color: black</string>
    </property>
    <widget class="QMenu" name="menuFile">
     <property name="styleSheet">
-     <string notr="true"/>
+     <string notr="true">color: white; background-color: black</string>
     </property>
     <property name="title">
      <string>Программа</string>
@@ -144,12 +144,18 @@
     <addaction name="actionSave_data"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
+    <property name="styleSheet">
+     <string notr="true">color: white; background-color: black</string>
+    </property>
     <property name="title">
      <string>Справка</string>
     </property>
     <addaction name="actionUs"/>
    </widget>
    <widget class="QMenu" name="menu">
+    <property name="styleSheet">
+     <string notr="true">color: white; background-color: black</string>
+    </property>
     <property name="title">
      <string>Правка данных</string>
     </property>
@@ -188,6 +194,9 @@
   <action name="actionRun">
    <property name="text">
     <string>Запуск</string>
+   </property>
+   <property name="shortcutContext">
+    <enum>Qt::WidgetShortcut</enum>
    </property>
   </action>
   <action name="actionCorrect_data">

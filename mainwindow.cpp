@@ -112,17 +112,28 @@ bool MainWindow::on_actionLoad_data_triggered()
 //            qDebug() << "out";
 //        }
         map<QString, int> name_num;
-        int asset_num = 0, pair_count = 0;
-        vector<Сollision> collision;
+        int asset_num = -1, pair_count = 0;
+        vector<Schedule> collision;
         for(auto t : all_info){
-            Сollision c;
+            Schedule c;
             c.setDuration((int)t[2].toDouble());
             c.setAssetName(t[3]);
-            auto res = name_num.insert(make_pair(t[3], asset_num));
-            if(res.second){
-                c.setAssetNum(asset_num);
-                asset_num++;
+            auto res = name_num.find(t[3]);
+            if(res != name_num.end()){
+                asset_num = res->second;
+            }else{
+                asset_num = name_num.size();
+                qDebug() << t[3] << name_num.size();
+
+                name_num.insert(make_pair(t[3], name_num.size()));
             }
+            c.setAssetNum(name_num.size());
+
+//            auto res = name_num.insert(make_pair(t[3], asset_num));
+//            if(res.second){
+//                c.setAssetNum(asset_num);
+//                asset_num++;
+//            }
             QString day = pair_of_times[pair_count][0];
             QString month = pair_of_times[pair_count][1];
             QString year = pair_of_times[pair_count][2];
@@ -141,6 +152,7 @@ bool MainWindow::on_actionLoad_data_triggered()
             pair_count++;
             collision.push_back(c);
         }
+        qDebug() << name_num;
         search_conflicts(collision);
         return true;
 
@@ -279,3 +291,8 @@ bool MainWindow::on_actionCorrect_data_triggered()
     return result;
 }
 
+
+void MainWindow::on_InputAndStart_2_clicked()
+{
+    main_func(ui);
+}
