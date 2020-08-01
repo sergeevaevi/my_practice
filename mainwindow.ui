@@ -160,7 +160,6 @@
      <string>Правка данных</string>
     </property>
     <addaction name="actionLoad_data"/>
-    <addaction name="actionCorrect_data"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menu"/>

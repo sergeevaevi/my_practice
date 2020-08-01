@@ -6,8 +6,25 @@ std::map<QString, s32_t> months_lit{
     {"July", 7}, {"Aug", 8}, {"Sept", 9}, {"Oct", 10}, {"Nov", 11}, {"Dec", 12},
 };
 
+void gebugConflicts(long min_end_time_i, long max_end_time_i, long min_end_time_j, long max_end_time_j){
+        time t;
+        qDebug() << "--------";
+        qDebug() << "---min_1";
+        xttotm(&t, min_end_time_i);
+        print_time(&t);
+        qDebug() << "---max_1";
+        xttotm(&t, max_end_time_i);
+        print_time(&t);
+        qDebug() << "---min_2";
+        xttotm(&t, min_end_time_j);
+        print_time(&t);
+        qDebug() << "---max_2";
+        xttotm(&t, max_end_time_j);
+        print_time(&t);
+}
+
 bool checkForCollisions(Schedule i, Schedule j){
-    time t;
+
     long max_end_time_i = i.getTimeAccessEnd() ;//+ i.getDuration();
 
     long max_end_time_j = j.getTimeAccessEnd() ;//+ j.getDuration();
@@ -24,151 +41,88 @@ bool checkForCollisions(Schedule i, Schedule j){
 
         return true;
     }
-//    qDebug() << "--------";
-//    qDebug() << "---min_1";
-//    xttotm(&t, min_end_time_i);
-//    print_time(&t);
-//    qDebug() << "---max_1";
-//    xttotm(&t, max_end_time_i);
-//    print_time(&t);
-//    qDebug() << "---min_2";
-//    xttotm(&t, min_end_time_j);
-//    print_time(&t);
-//    qDebug() << "---max_2";
-//    xttotm(&t, max_end_time_j);
-//    print_time(&t);
+
     return false;
 }
 
-void search_conflicts(vector<Schedule> all_satellites/*Conflict * ConflictWinSubset, Contact * C, int *WINDOWS_BY_REQUEST*/)
-{
-    int WINDOWS_BY_REQUEST[100];
-    Conflict ConflictWinSubset[100];
-    Contact C[100];
-    /*
-    WINDOWS_BY_REQUEST[0]=13;
-    WINDOWS_BY_REQUEST[1]=14;
-    WINDOWS_BY_REQUEST[2]=12;
-    WINDOWS_BY_REQUEST[3]=12;
-    WINDOWS_BY_REQUEST[4]=14;
-    WINDOWS_BY_REQUEST[5]=13;
-    WINDOWS_BY_REQUEST[6]=12;
-    WINDOWS_BY_REQUEST[7]=12;
 
-    ConflictWinSubset[0].lpConfW[0] = &C[1].Win[0];
-    ConflictWinSubset[0].lpConfW[1] = &C[4].Win[0];
-
-    // blue1
-    ConflictWinSubset[1].lpConfW[0] = &C[2].Win[1];
-    ConflictWinSubset[1].lpConfW[1] = &C[6].Win[0];
-
-    // orange
-    ConflictWinSubset[2].lpConfW[0] = &C[3].Win[1];
-    ConflictWinSubset[2].lpConfW[1] = &C[7].Win[1];
-
-
-    // green2
-    ConflictWinSubset[3].lpConfW[0] = &C[1].Win[1];
-    ConflictWinSubset[4].lpConfW[1] = &C[5].Win[1];
-
-    //orange2
-    ConflictWinSubset[4].lpConfW[0] = &C[1].Win[2];
-    ConflictWinSubset[4].lpConfW[1] = &C[4].Win[2];
-    ConflictWinSubset[4].lpConfW[2] = &C[5].Win[2];
-
-    // iight green
-    ConflictWinSubset[5].lpConfW[0] = &C[0].Win[2];
-    ConflictWinSubset[5].lpConfW[1] = &C[2].Win[2];
-
-    // light blue
-    ConflictWinSubset[6].lpConfW[0] = &C[1].Win[3];
-    ConflictWinSubset[6].lpConfW[1] = &C[4].Win[3];
-
-    // brown
-    ConflictWinSubset[7].lpConfW[0] = &C[2].Win[3];
-    ConflictWinSubset[7].lpConfW[1] = &C[7].Win[3];
-
-    // dark green
-    ConflictWinSubset[8].lpConfW[0] = &C[4].Win[4];
-    ConflictWinSubset[8].lpConfW[1] = &C[6].Win[3];
-
-    // red
-    ConflictWinSubset[9].lpConfW[0] = &C[2].Win[4];
-    ConflictWinSubset[9].lpConfW[1] = &C[3].Win[3];
-    ConflictWinSubset[9].lpConfW[2] = &C[7].Win[4];
-
-    //blueblue
-    ConflictWinSubset[10].lpConfW[0] = &C[3].Win[4];
-    ConflictWinSubset[10].lpConfW[1] = &C[7].Win[5];
-
-    //yellowyellow
-    ConflictWinSubset[11].lpConfW[0] = &C[4].Win[5];
-    ConflictWinSubset[11].lpConfW[1] = &C[5].Win[5];
-
-    //greengreen
-    ConflictWinSubset[12].lpConfW[0] = &C[3].Win[7];
-    ConflictWinSubset[12].lpConfW[1] = &C[7].Win[7];
-
-    //brownbrown
-    ConflictWinSubset[13].lpConfW[0] = &C[3].Win[8];
-    ConflictWinSubset[13].lpConfW[1] = &C[7].Win[8];
-
-    //ll-blue
-    ConflictWinSubset[14].lpConfW[0] = &C[4].Win[8];
-    ConflictWinSubset[14].lpConfW[1] = &C[5].Win[8];
-
-    //ll-green
-    ConflictWinSubset[15].lpConfW[0] = &C[0].Win[8];
-    ConflictWinSubset[15].lpConfW[1] = &C[2].Win[8];
-
-    //nice-orange
-    ConflictWinSubset[16].lpConfW[0] = &C[2].Win[9];
-    ConflictWinSubset[16].lpConfW[1] = &C[5].Win[9];
-
-    //simple-green
-    ConflictWinSubset[17].lpConfW[0] = &C[4].Win[10];
-    ConflictWinSubset[17].lpConfW[1] = &C[6].Win[9];
-
-    // fiolent
-    ConflictWinSubset[18].lpConfW[0] = &C[2].Win[10];
-    ConflictWinSubset[18].lpConfW[1] = &C[3].Win[9];
-    ConflictWinSubset[18].lpConfW[2] = &C[7].Win[9];
-
-    //super-green
-    ConflictWinSubset[19].lpConfW[0] = &C[4].Win[11];
-    ConflictWinSubset[19].lpConfW[1] = &C[6].Win[10];
-
-    //redred
-    ConflictWinSubset[20].lpConfW[0] = &C[3].Win[10];
-    ConflictWinSubset[20].lpConfW[1] = &C[7].Win[10];
-
-    //next-yellow
-    ConflictWinSubset[21].lpConfW[0] = &C[3].Win[11];
-    ConflictWinSubset[21].lpConfW[1] = &C[7].Win[11];
-
-    //apelsin
-    ConflictWinSubset[22].lpConfW[0] = &C[0].Win[11];
-    ConflictWinSubset[22].lpConfW[1] = &C[1].Win[12];
-
-    //sky-blue
-    ConflictWinSubset[23].lpConfW[0] = &C[4].Win[12];
-    ConflictWinSubset[23].lpConfW[1] = &C[5].Win[12];
-
-    //mandarin
-    ConflictWinSubset[24].lpConfW[0] = &C[0].Win[12];
-    ConflictWinSubset[24].lpConfW[1] = &C[1].Win[13];
-*/
+pair<int, int> get_values_by_conflicts(vector<Schedule> all_satellites){
     map<int, int> windows_numbers;
     map<int, int> windows_numbers_for_each;
     Schedule d;
-    qDebug() << all_satellites.size();
-    //    vector<Сollision> collisions;// = parseFile();
-    for(auto c: all_satellites){
-        WINDOWS_BY_REQUEST[c.getAssetNum()]++;
-
-    }
+    int max_num_of_win = 0;
     int num = 0;
-    for(int i = 0; i < all_satellites.size(); i++){
+    unsigned long i, j;
+    for(i = 0; i < all_satellites.size(); i++){
+        auto find = windows_numbers.find(all_satellites[i].getAssetNum());
+        num = 0;
+        if(find != windows_numbers.end()){
+            find->second++;
+            num = find->second;
+        }else{
+            windows_numbers.insert(make_pair(all_satellites[i].getAssetNum(), 0));
+        }
+        if(num > max_num_of_win){
+            max_num_of_win = num;
+        }
+        windows_numbers_for_each.insert(make_pair(i, num));
+    }
+    int all_conflicts_num = 0;
+    int skip = 1;
+    for(i = 0; i < all_satellites.size(); i+=skip){
+        skip = 1;
+        int collision_num = 0;
+        for(j = i+1; j < all_satellites.size(); j++){
+            if(!checkForCollisions(all_satellites[i], all_satellites[j])){
+                if(collision_num != 0){
+                    skip++;
+                    all_conflicts_num--;
+                }else{
+//                    qDebug() ;
+//                    qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num <<
+//                                "]  ==>  &C[" << all_satellites[i].getAssetNum() << "].Win[" << windows_numbers_for_each.find(i)->second << "];" <<
+//                                all_satellites[i].getAssetName()<< all_satellites[i].getAssetNum() << all_satellites[j].getAssetName();
+                    skip = 1;
+                }
+//                qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num+1 <<
+//                            "]  ==>  &C[" << all_satellites[j].getAssetNum() << "].Win[" << windows_numbers_for_each.find(j)->second << "];" <<
+//                            all_satellites[j].getAssetName() << all_satellites[j].getAssetNum() << all_satellites[i].getAssetName() ;
+
+                collision_num++;
+                all_conflicts_num++;
+            }
+        }
+        all_satellites[i].number_of_windows++;
+        skip = collision_num + 1;
+    }
+    return make_pair(max_num_of_win+1, all_conflicts_num);
+}
+
+void debugTiming(Schedule i, Schedule j){
+    time t;
+    qDebug() << "1 st";
+    xttotm(&t, i.getTimeAccessStart());
+    print_time(&t);
+    qDebug() << "1 end";
+    xttotm(&t, i.getTimeAccessEnd());
+    print_time(&t);
+
+    qDebug() << "2 st";
+    xttotm(&t, j.getTimeAccessStart());
+    print_time(&t);
+    qDebug() << "2 end";
+    xttotm(&t, j.getTimeAccessEnd());
+    print_time(&t);
+    qDebug() << "============";
+}
+
+void setBySearchingConflicts(vector<Schedule> all_satellites, Conflict * ConflictWinSubset, Contact * C)
+{
+    map<int, int> windows_numbers;
+    map<int, int> windows_numbers_for_each;
+    Schedule d;
+    int num = 0;
+    for(unsigned int i = 0; i < all_satellites.size(); i++){
         auto find = windows_numbers.find(all_satellites[i].getAssetNum());
         num = 0;
         if(find != windows_numbers.end()){
@@ -179,67 +133,41 @@ void search_conflicts(vector<Schedule> all_satellites/*Conflict * ConflictWinSub
         }
         windows_numbers_for_each.insert(make_pair(i, num));
     }
-    time t;
     int all_conflicts_num = 0;
     int skip = 1;
-    for(int i = 0; i < all_satellites.size(); i+=skip){
+    for(unsigned int i = 0; i < all_satellites.size(); i+=skip){
         skip = 1;
         int collision_num = 0;
-
-//        auto ins = windows_numbers.insert(make_pair(all_satellites[i].getAssetNum(), 0));
-//        if(ins.second){
-//            qDebug() << ins.first->second << all_satellites[i].getAssetName() << "!";
-//        }else{
-//            ins.first->second++;
-//            qDebug() << ins.first->second << all_satellites[i].getAssetName();
-//        }
-        for(int j = i+1; j < all_satellites.size(); j++){
+        for(unsigned int j = i+1; j < all_satellites.size(); j++){
 
             if(!checkForCollisions(all_satellites[i], all_satellites[j])){
-//                auto find = windows_numbers.find(all_satellites[j].getAssetNum());
-//                if(find == windows_numbers.end()){
-//                    qDebug() << ins.first->second << all_satellites[i].getAssetName() << "!";
-//                    windows_numbers.insert(make_pair(all_satellites[j].getAssetNum(), 0));
-//                }else{
-//                    qDebug() << ins.first->second << all_satellites[i].getAssetName();
-//                   ins.first->second++;
-//                }
                 if(collision_num != 0){
                     skip++;
                     all_conflicts_num--;
 
                 }else{
-                    qDebug() ;
+                   qDebug() ;
                     qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num <<
-                                "]  ==>  &C[" << all_satellites[i].getAssetNum() << "].Win[" << windows_numbers_for_each.find(i)->second << "];" <<
-                                all_satellites[i].getAssetName()<< all_satellites[i].getAssetNum() << all_satellites[j].getAssetName();
+                                "]  ==>  &C[" << all_satellites[i].getAssetNum() << "].Win[" << windows_numbers_for_each.find(i)->second << "];"
+
+//                                << all_satellites[i].getAssetName()<< all_satellites[i].getAssetNum() << all_satellites[j].getAssetName()
+                                ;
+
+                    ConflictWinSubset[all_conflicts_num].lpConfW[collision_num] = &C[all_satellites[i].getAssetNum()].Win[windows_numbers_for_each.find(i)->second];
+
                     skip = 1;
                 }
 
                 qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num+1 <<
-                            "]  ==>  &C[" << all_satellites[j].getAssetNum() << "].Win[" << windows_numbers_for_each.find(j)->second << "];" <<
-                         all_satellites[j].getAssetName() << all_satellites[j].getAssetNum() << all_satellites[i].getAssetName() ;
+                            "]  ==>  &C[" << all_satellites[j].getAssetNum() << "].Win[" << windows_numbers_for_each.find(j)->second << "];"
+//                            << all_satellites[j].getAssetName() << all_satellites[j].getAssetNum() << all_satellites[i].getAssetName()
+                            ;
+                ConflictWinSubset[all_conflicts_num].lpConfW[collision_num+1] = &C[all_satellites[j].getAssetNum()].Win[windows_numbers_for_each.find(j)->second];
 
-//                qDebug() << "1 st";
-//                xttotm(&t, all_satellites[i].getTimeAccessStart());
-//                print_time(&t);
-//                qDebug() << "1 end";
-//                xttotm(&t, all_satellites[i].getTimeAccessEnd());
-//                print_time(&t);
-
-//                qDebug() << "2 st";
-//                xttotm(&t, all_satellites[j].getTimeAccessStart());
-//                print_time(&t);
-//                qDebug() << "2 end";
-//                xttotm(&t, all_satellites[j].getTimeAccessEnd());
-//                print_time(&t);
-//                qDebug() << "============";
-                // ConflictWinSubset[collisions[i].getAssetNum()].lpConfW[collision_num] = &C[collisions[i].getAssetNum()].Win[collisions[i].number_of_collisions];
                 collision_num++;
                 all_conflicts_num++;
 
             }
-
         }
         all_satellites[i].number_of_windows++;
         skip = collision_num + 1;
@@ -305,7 +233,7 @@ void Schedule::setDuration(int dur)
 
 void Schedule::setAssetName(string nm)
 {
-
+    asset_name = QString(nm.c_str());
 }
 
 void Schedule::setAssetName(QString nm)
@@ -317,16 +245,6 @@ void Schedule::setAssetNum(int nm)
 {
     asset_num = nm;
 }
-
-//int Schedule::getNumOfWindow() const
-//{
-//    return num_of_window;
-//}
-
-//void Schedule::setNumOfWindow(int value)
-//{
-//    num_of_window = value;
-//}
 
 int Schedule::getAssetNum()
 {
@@ -351,12 +269,5 @@ void Schedule::setTimeAccessStart(QString day, QString month, QString year, QStr
     t.tm_sec = (long)sec.toDouble();
     xtime_t timeU = xtmtot(&t);
     access_start = timeU;
-    //    qDebug() << t.tm_mday << day;
-    //    qDebug() <<t.tm_mon << month;
-    //    qDebug() <<t.tm_year << year;
-    //    qDebug() <<t.tm_hour << hour;
-    //    qDebug() <<t.tm_min << min;
-    //    qDebug() <<t.tm_sec << sec;
-    //    qDebug() << timeU;
 }
 

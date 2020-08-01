@@ -10,8 +10,8 @@
 #include <math.h>
 #include <string.h>
 #include <malloc.h>
-
-
+#include <vector>
+#include <search_conflict_algorithm.h>
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -24,6 +24,9 @@ class MainWindow : public QMainWindow
 public:
     MainWindow(QWidget *parent = nullptr);
     ~MainWindow();
+
+    bool isDataLoaded();
+    void setDataLoaded(bool val);
 
 private slots:
     bool on_actionLoad_data_triggered();
@@ -42,6 +45,8 @@ private slots:
 
 private:
     Ui::MainWindow *ui;
+    bool data_loaded = false;
+    std::vector<Schedule> data;
 };
 
 #endif // MAINWINDOW_H

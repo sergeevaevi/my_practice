@@ -140,202 +140,18 @@ static int calc_gamma2(Contact *C, Request *R) {
     return gamma2;
 }
 
-void getWindowsByRequest(){
-    //    [NUM_REQS] = // comm windows number for every request
-    //{
-    //        13,
-    //        14,
-    //        12,
-    //        12,
-    //        14,
-    //        13,
-    //        12,
-    //        12
-    //        };
+void setWindowsByRequestByExample(int *WINDOWS_BY_REQUEST){
+        WINDOWS_BY_REQUEST[0]=13;
+        WINDOWS_BY_REQUEST[1]=14;
+        WINDOWS_BY_REQUEST[2]=12;
+        WINDOWS_BY_REQUEST[3]=12;
+        WINDOWS_BY_REQUEST[4]=14;
+        WINDOWS_BY_REQUEST[5]=13;
+        WINDOWS_BY_REQUEST[6]=12;
+        WINDOWS_BY_REQUEST[7]=12;
 }
 
-
-void copy(Contact* C_final, Contact* C){
-    for (int i = 0; i < NUM_REQS; i++) {
-        for (int j = 0; j < C[i].num_wins; j++) {
-            C_final[i].Win[j].is_final = C[i].Win[j].is_final;
-            C_final[i].Win[j].is_available = C[i].Win[j].is_available;
-            C_final[i].Win[j].G = C[i].Win[j].G;
-            C_final[i].Win[j].t_AOS = C[i].Win[j].t_AOS;
-            C_final[i].Win[j].t_LOS = C[i].Win[j].t_LOS;
-        }
-    }
-}
-
-/*******************************************************
-                Main program body
-*******************************************************/
-
-
-void printContact(Contact * C){
-    printf("Contact is\n");
-    for (int i = 0; i < NUM_REQS; i++) {
-        for (int j = 0; j < C[i].num_wins; j++) {
-            printf("C{%u,%u].%u;%u;%u;%u;%u\n", i + 1, j + 1, C[i].Win[j].is_final, C[i].Win[j].G, C[i].Win[j].t_AOS, C[i].Win[j].t_LOS, C[i].Win[j].is_available);
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-void printRequest(Request * R){
-    for (int j = 0; j < NUM_REQS; j++) {
-        printf("R[%u].%u;%u;%u;%u;%u%u;%u\n", j + 1, R[j].S, R[j].U, R[j].Pr, R[j].Rd, R[j].te, R[j].ts, R[j].dur);
-    }
-}
-
-void printConflict(Conflict* C){
-    printf("Conflict is\n");
-    for (int i = 0; i < NUM_OF_CONFLICTS; i++) {
-        for (int j = 0; j < NUM_REQS; j++) {
-            if(C[i].lpConfW[j]){
-                printf("C{%u,%u].%u;%u;%u;%u;%u\n",i + 1, j + 1, C[i].lpConfW[j]->G, C[i].lpConfW[j]->t_AOS, C[i].lpConfW[j]->t_LOS, C[i].lpConfW[j]->is_final, C[i].lpConfW[j]->is_available);
-            } else{
-                printf("-ZERO-\n");
-            }
-        }
-        printf("\n");
-    }
-    printf("\n");
-}
-
-
-void addLabels(Ui::MainWindow * ui, Contact * C, Contact * C_final, int * qqq, QVector<QLabel*>& labels){
-    //ui->front_img->hide();
-//    QVector<QLabel*> labels;
-    int count = 0;
-    for(int j = 0; j < NUM_WINS;j++){
-        for(int i = 0; i < NUM_REQS;i++){
-
-            QLabel * label = new QLabel(ui->gridLayoutWidget);
-            label->setStyleSheet("color: AliceBlue; padding: 25px;");
-
-            if(j < C[i].num_wins){
-                label->setText("C["+QString::number(i + 1)+","+QString::number(j + 1)+"]="+QString::number(C_final[i].Win[j].is_final));
-            }
-            else{
-                label->setText("-----");
-            }
-            label->setObjectName("label_"+QString::number(count));
-            ui->gridLayout->addWidget(label, j, i, 1, 1);
-            count++;
-            labels.push_back(label);
-        }
-    }
-    for (int k = 0; k < NUM_REQS; k++) {
-        QLabel * label = new QLabel(ui->gridLayoutWidget);
-        label->setStyleSheet("color: AliceBlue;padding: 25px;");
-        label->setText("Summ="+QString::number(qqq[k]));
-        label->setObjectName("label_sum"+QString::number(count));
-        ui->gridLayout->addWidget(label, NUM_WINS+1, k, 1, 1);
-        count++;
-        labels.push_back(label);
-    }
-}
-
-QVector<QLabel*> main_func(Ui::MainWindow * ui) {
-    int *WINDOWS_BY_REQUEST;
-
-    WINDOWS_BY_REQUEST = (int*)malloc(NUM_REQS * sizeof(int));
-    ///this shit must be rewritten later
-    WINDOWS_BY_REQUEST[0]=13;
-    WINDOWS_BY_REQUEST[1]=14;
-    WINDOWS_BY_REQUEST[2]=12;
-    WINDOWS_BY_REQUEST[3]=12;
-    WINDOWS_BY_REQUEST[4]=14;
-    WINDOWS_BY_REQUEST[5]=13;
-    WINDOWS_BY_REQUEST[6]=12;
-    WINDOWS_BY_REQUEST[7]=12;
-    ///
-    //------------------
-    int summ = 0;
-    int val = 0;
-    int res = 0;
-    int i, j, k;
-    //------------------
-
-    ///mem alloc and how stupid I am?
-    ///
-    Contact * C = (Contact*)malloc(NUM_REQS * sizeof(Contact));
-    //C[NUM_REQS]; Cij = F( Ri, t_AOS, t_LOS, G ); // j contact windows of request Ri
-    for (i = 0; i < NUM_REQS; i++) {
-        C[i].Win =  (Window*)malloc(NUM_WINS * sizeof(Window));
-        //Window Win[NUM_WINS]; // window parameters
-    }
-
-    Request * R = (Request*)malloc(NUM_REQS * sizeof(Request));
-    //[NUM_REQS]; //	Ri = f( S,U,ts,te,dur, Rd); - communication request number i
-
-    Contact * C_final = (Contact*)malloc(NUM_REQS * sizeof(Contact));
-    //[NUM_REQS];
-    for (i = 0; i < NUM_REQS; i++) {
-        C_final[i].Win =  (Window*)malloc(NUM_WINS * sizeof(Window));
-        //Window Win[NUM_WINS]; // window parameters
-    }
-
-    Conflict * ConflictWinSubset = (Conflict*)malloc(NUM_OF_CONFLICTS * sizeof(Conflict));
-    //[NUM_OF_CONFLICTS];
-    for (i = 0; i < NUM_OF_CONFLICTS; i++) {
-        ConflictWinSubset[i].lpConfW = (Window**)malloc(NUM_REQS * sizeof(Window*));
-        //Window *lpConfW[NUM_REQS]; // conflict windows
-    }
-    //********** request initialization ***************
-
-    for (i = 0; i < NUM_OF_CONFLICTS; i++) {
-        for (j = 0; j < NUM_REQS; j++){
-            ConflictWinSubset[i].lpConfW[j] = nullptr;
-        }
-    }
-
-    for (i = 0; i < NUM_REQS; i++) {
-        C[i].num_wins = WINDOWS_BY_REQUEST[i];
-    }
-
-    for (i = 0; i < NUM_REQS; i++) {
-        R[i].Pr = LOW_PRIO;
-        R[i].S = SAT_1;
-        R[i].U = USER_3;
-        //
-        R[i].Rd = 0;
-        R[i].te = 0;
-        R[i].ts = 0;
-        R[i].dur = 0;
-        //
-        for (j = 0; j < C[i].num_wins; j++){
-            C[i].Win[j].G = GS_3;
-            //
-            C[i].Win[j].t_AOS = 0;
-            C[i].Win[j].t_LOS = 0;
-            //
-        }
-    }
-
-    //    //********** set all as available  ***************
-
-    for (i = 0; i < NUM_REQS; i++) {
-        for (j = 0; j < C[i].num_wins; j++) {
-            C[i].Win[j].is_final = true;
-            C[i].Win[j].is_available = true;
-        }
-    }
-
-    static bool flag[8][8] =
-    {
-        {true, false, false, false, false, false, false, false},
-        {false, true, false, false, false, false, false, false},
-        {false, false, true, false, false, false, false, false},
-        {false, false, false, true, false, false, false, false},
-        {false, false, false, false, true, false, false, false},
-        {false, false, false, false, false, true, false, false},
-        {false, false, false, false, false, false, true, false},
-        {false, false, false, false, false, false, false, true}
-    };
-
+void setConflictsByExample(Conflict * ConflictWinSubset, Contact * C){
     //********** conflicts of windows, taken from STK for example  ***************
     // yellow
     ConflictWinSubset[0].lpConfW[0] = &C[1].Win[0];
@@ -441,8 +257,205 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
     ConflictWinSubset[24].lpConfW[0] = &C[0].Win[12];
     ConflictWinSubset[24].lpConfW[1] = &C[1].Win[13];
 
+}
+
+void copy(Contact* C_final, Contact* C){
+    for (int i = 0; i < NUM_REQS; i++) {
+        for (int j = 0; j < C[i].num_wins; j++) {
+            C_final[i].Win[j].is_final = C[i].Win[j].is_final;
+            C_final[i].Win[j].is_available = C[i].Win[j].is_available;
+            C_final[i].Win[j].G = C[i].Win[j].G;
+            C_final[i].Win[j].t_AOS = C[i].Win[j].t_AOS;
+            C_final[i].Win[j].t_LOS = C[i].Win[j].t_LOS;
+        }
+    }
+}
+
+/*******************************************************
+                Main program body
+*******************************************************/
+
+
+void printContact(Contact * C){
+    printf("Contact is\n");
+    for (int i = 0; i < NUM_REQS; i++) {
+        for (int j = 0; j < C[i].num_wins; j++) {
+            printf("C{%u,%u].%u;%u;%u;%u;%u\n", i + 1, j + 1, C[i].Win[j].is_final, C[i].Win[j].G, C[i].Win[j].t_AOS, C[i].Win[j].t_LOS, C[i].Win[j].is_available);
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+void printRequest(Request * R){
+    for (int j = 0; j < NUM_REQS; j++) {
+        printf("R[%u].%u;%u;%u;%u;%u%u;%u\n", j + 1, R[j].S, R[j].U, R[j].Pr, R[j].Rd, R[j].te, R[j].ts, R[j].dur);
+    }
+}
+
+void printConflict(Conflict* C){
+    printf("Conflict is\n");
+    for (int i = 0; i < NUM_OF_CONFLICTS; i++) {
+        for (int j = 0; j < NUM_REQS; j++) {
+            if(C[i].lpConfW[j]){
+                printf("C{%u,%u].%u;%u;%u;%u;%u\n",i + 1, j + 1, C[i].lpConfW[j]->G, C[i].lpConfW[j]->t_AOS, C[i].lpConfW[j]->t_LOS, C[i].lpConfW[j]->is_final, C[i].lpConfW[j]->is_available);
+            } else{
+                printf("-ZERO-\n");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+
+void addLabels(Ui::MainWindow * ui, Contact * C, Contact * C_final, int * qqq, QVector<QLabel*>& labels){
+    //ui->front_img->hide();
+//    QVector<QLabel*> labels;
+    int count = 0;
+    for(int j = 0; j < NUM_WINS;j++){
+        for(int i = 0; i < NUM_REQS;i++){
+
+            QLabel * label = new QLabel(ui->gridLayoutWidget);
+            label->setStyleSheet("color: AliceBlue; padding: 25px;");
+
+            if(j < C[i].num_wins){
+                label->setText("C["+QString::number(i + 1)+","+QString::number(j + 1)+"]="+QString::number(C_final[i].Win[j].is_final));
+            }
+            else{
+                label->setText("-----");
+            }
+            label->setObjectName("label_"+QString::number(count));
+            ui->gridLayout->addWidget(label, j, i, 1, 1);
+            count++;
+            labels.push_back(label);
+        }
+    }
+    for (int k = 0; k < NUM_REQS; k++) {
+        QLabel * label = new QLabel(ui->gridLayoutWidget);
+        label->setStyleSheet("color: AliceBlue;padding: 25px;");
+        label->setText("Summ="+QString::number(qqq[k]));
+        label->setObjectName("label_sum"+QString::number(count));
+        ui->gridLayout->addWidget(label, NUM_WINS+1, k, 1, 1);
+        count++;
+        labels.push_back(label);
+    }
+}
+
+
+QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, bool is_data_loaded) {
+    int *WINDOWS_BY_REQUEST;
+
+    WINDOWS_BY_REQUEST = (int*)malloc(NUM_REQS * sizeof(int));
+
+    ///this shit must be rewritten later
+    if(is_data_loaded){
+        for(int i = 0; i < NUM_REQS; i++){
+            WINDOWS_BY_REQUEST[i] = 0;
+        }
+        qDebug() << "Yeah, you are here!" << NUM_REQS << NUM_WINS << NUM_OF_CONFLICTS;
+        for(auto c: data){
+            WINDOWS_BY_REQUEST[c.getAssetNum()]++;
+        }
+
+        for(int i = 0; i < NUM_REQS; i++){
+            qDebug() << WINDOWS_BY_REQUEST[i];
+        }
+    }else{
+        setWindowsByRequestByExample(WINDOWS_BY_REQUEST);
+    }
+    ///
+    //------------------
+    int summ = 0;
+    int i, j, k;
+    //------------------
+
+    ///mem alloc and how stupid I am?
+    ///
+    Contact * C = (Contact*)malloc(NUM_REQS * sizeof(Contact));
+    //C[NUM_REQS]; Cij = F( Ri, t_AOS, t_LOS, G ); // j contact windows of request Ri
+    for (i = 0; i < NUM_REQS; i++) {
+        C[i].Win =  (Window*)malloc(NUM_WINS * sizeof(Window));
+        //Window Win[NUM_WINS]; // window parameters
+    }
+
+    Request * R = (Request*)malloc(NUM_REQS * sizeof(Request));
+    //[NUM_REQS]; //	Ri = f( S,U,ts,te,dur, Rd); - communication request number i
+
+    Contact * C_final = (Contact*)malloc(NUM_REQS * sizeof(Contact));
+    //[NUM_REQS];
+    for (i = 0; i < NUM_REQS; i++) {
+        C_final[i].Win =  (Window*)malloc(NUM_WINS * sizeof(Window));
+        //Window Win[NUM_WINS]; // window parameters
+    }
+
+    Conflict * ConflictWinSubset = (Conflict*)malloc(NUM_OF_CONFLICTS * sizeof(Conflict));
+    //[NUM_OF_CONFLICTS];
+    for (i = 0; i < NUM_OF_CONFLICTS; i++) {
+        ConflictWinSubset[i].lpConfW = (Window**)malloc(NUM_REQS * sizeof(Window*));
+        //Window *lpConfW[NUM_REQS]; // conflict windows
+    }
+    //********** request initialization ***************
+
+    for (i = 0; i < NUM_OF_CONFLICTS; i++) {
+        for (j = 0; j < NUM_REQS; j++){
+            ConflictWinSubset[i].lpConfW[j] = nullptr;
+        }
+    }
+
+    for (i = 0; i < NUM_REQS; i++) {
+        C[i].num_wins = WINDOWS_BY_REQUEST[i];
+    }
+
+    for (i = 0; i < NUM_REQS; i++) {
+        R[i].Pr = LOW_PRIO;
+        R[i].S = SAT_1;
+        R[i].U = USER_3;
+        //
+        R[i].Rd = 0;
+        R[i].te = 0;
+        R[i].ts = 0;
+        R[i].dur = 0;
+        //
+        for (j = 0; j < C[i].num_wins; j++){
+            C[i].Win[j].G = GS_3;
+            //
+            C[i].Win[j].t_AOS = 0;
+            C[i].Win[j].t_LOS = 0;
+            //
+        }
+    }
+
+    //    //********** set all as available  ***************
+
+    for (i = 0; i < NUM_REQS; i++) {
+        for (j = 0; j < C[i].num_wins; j++) {
+            C[i].Win[j].is_final = true;
+            C[i].Win[j].is_available = true;
+        }
+    }
+
+    bool ** flag = (bool**)malloc(NUM_REQS * sizeof(bool*));
+    for (i = 0; i < NUM_REQS; i++) {
+        flag[i] =  (bool*)malloc(NUM_REQS * sizeof(bool));
+        for (j = 0; j < NUM_REQS; j++){
+            if(i == j){
+                flag[i][j] = true;
+            }else{
+                flag[i][j] = false;
+            }
+        }
+    }
+
+    if(is_data_loaded){
+        setBySearchingConflicts(data, ConflictWinSubset, C);
+    }else{
+        setConflictsByExample(ConflictWinSubset, C);
+    }
+
+
     // ************* Optimization: 'is_final' flag variation ***************************
-    bool fstop = false;
+
     int gamma_max = -500000; // initial value
     for (int next_var = 0; next_var < NUM_REQS; next_var++) {
         for (int next_subset = 0; next_subset < NUM_OF_CONFLICTS; next_subset++) {
@@ -470,6 +483,7 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
                 int gamma2 = calc_gamma2(C, R);
                 int gamma = gamma1 - gamma2;
                 if(gamma > gamma_max) {
+                    qDebug() << "HERE";
                     gamma_max = gamma;
                     // memmove(C_final, C, sizeof(Contact) * NUM_REQS);
                     copy(C_final, C);
@@ -483,8 +497,6 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui) {
 
     int * qqq = (int*)malloc(NUM_REQS * sizeof(int));
     // [NUM_REQS];
-
-    char szbuff[200] = "";
 
     for (i = 0; i < NUM_REQS; i++) {
         for (j = 0; j < C[i].num_wins; j++) {

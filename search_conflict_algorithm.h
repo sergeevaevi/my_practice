@@ -53,6 +53,9 @@ public:
 //    void setNumOfWindow(int value);
 };
 
-void search_conflicts(vector<Schedule> all_satellites);
+
+pair<int, int> get_values_by_conflicts(vector<Schedule> all_satellites);
+
+void setBySearchingConflicts(vector<Schedule> all_satellites, Conflict * ConflictWinSubset, Contact * C);
 
 #endif // SEARCH_CONFLICT_ALGORITHM_H

@@ -27,12 +27,15 @@ MainWindow::~MainWindow()
     delete ui;
 }
 
+bool MainWindow::isDataLoaded()
+{
+    return data_loaded;
+}
 
-
-//    QString t_a;
-//    QString t_e;
-//    QString dur;
-//    QString name;
+void MainWindow::setDataLoaded(bool val)
+{
+    data_loaded = val;
+}
 
 
 void findAllSubstrs(QString &str, QString sym, QVector<QVector<QString>> &time){
@@ -79,12 +82,7 @@ bool MainWindow::on_actionLoad_data_triggered()
             return false;
         }
         file.close();
-
-        //        for(auto s : all_info){
-        //            qDebug() << "Begin";
-        //            qDebug() << "  ;  " << s;
-        //            qDebug() << "End";
-        //        }
+        data_loaded = true;
         QVector<QVector<QString>> pair_of_times;
         int n = 0;
         for(auto t : all_info){
@@ -105,12 +103,6 @@ bool MainWindow::on_actionLoad_data_triggered()
             //            qDebug() << str;
             findAllSubstrs(str, ":", hours);
         }
-
-        //        for(auto s : hours){
-        //            qDebug() << "in";
-        //            qDebug() << "    " << s;
-        //            qDebug() << "out";
-        //        }
         map<QString, int> name_num;
         int asset_num = -1, pair_count = 0;
         vector<Schedule> collision;
@@ -155,7 +147,12 @@ bool MainWindow::on_actionLoad_data_triggered()
             collision.push_back(c);
         }
         qDebug() << name_num;
-        search_conflicts(collision);
+        NUM_REQS = name_num.size();
+        auto res = get_values_by_conflicts(collision);
+        NUM_WINS = res.first;
+        NUM_OF_CONFLICTS = res.second;
+        data = collision;
+        qDebug() << NUM_REQS << NUM_WINS << NUM_OF_CONFLICTS;
         return true;
 
         //        time tt{30, 23, 5, 10, 7, 2020};
@@ -172,7 +169,7 @@ void MainWindow::on_actionSave_triggered()
     if (file.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&file);
-        auto labels = main_func(ui);
+        auto labels = main_func(ui, data, data_loaded);
         int count = 0;
 
         for(int j = 0; j < NUM_WINS;j++){
@@ -215,7 +212,7 @@ void MainWindow::on_actionSave_data_triggered()
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
             QTextStream stream(&file);
-            auto labels = main_func(ui);
+            auto labels = main_func(ui, data, data_loaded);
             int count = 0;
 
             for(int j = 0; j < NUM_WINS;j++){
@@ -252,7 +249,8 @@ void MainWindow::on_actionSave_data_triggered()
 
 void MainWindow::on_actionRun_triggered()
 {
-    main_func(ui);
+    qDebug() << data_loaded << "?";
+    main_func(ui, data, data_loaded);
 }
 
 void MainWindow::on_InputAndStart_clicked()
@@ -296,5 +294,7 @@ bool MainWindow::on_actionCorrect_data_triggered()
 
 void MainWindow::on_InputAndStart_2_clicked()
 {
-    main_func(ui);
+    main_func(ui, data, data_loaded);
 }
+
+
