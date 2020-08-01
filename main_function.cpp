@@ -353,13 +353,8 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
         for(int i = 0; i < NUM_REQS; i++){
             WINDOWS_BY_REQUEST[i] = 0;
         }
-        qDebug() << "Yeah, you are here!" << NUM_REQS << NUM_WINS << NUM_OF_CONFLICTS;
         for(auto c: data){
             WINDOWS_BY_REQUEST[c.getAssetNum()]++;
-        }
-
-        for(int i = 0; i < NUM_REQS; i++){
-            qDebug() << WINDOWS_BY_REQUEST[i];
         }
     }else{
         setWindowsByRequestByExample(WINDOWS_BY_REQUEST);
@@ -419,10 +414,15 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
         //
         for (j = 0; j < C[i].num_wins; j++){
             C[i].Win[j].G = GS_3;
-            //
-            C[i].Win[j].t_AOS = 0;
-            C[i].Win[j].t_LOS = 0;
-            //
+            if(is_data_loaded){
+                int a_num = data[i].getAssetNum();
+                int w_num = data[i].getAssetNum();
+                C[a_num].Win[w_num].t_AOS = data[i].getTimeAccessStart();
+                C[a_num].Win[w_num].t_LOS = data[i].getTimeAccessEnd();
+            }else{
+                C[i].Win[j].t_AOS = 0;
+                C[i].Win[j].t_LOS = 0;
+            }
         }
     }
 
@@ -483,7 +483,6 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
                 int gamma2 = calc_gamma2(C, R);
                 int gamma = gamma1 - gamma2;
                 if(gamma > gamma_max) {
-                    qDebug() << "HERE";
                     gamma_max = gamma;
                     // memmove(C_final, C, sizeof(Contact) * NUM_REQS);
                     copy(C_final, C);

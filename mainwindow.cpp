@@ -100,7 +100,6 @@ bool MainWindow::on_actionLoad_data_triggered()
         QVector<QVector<QString>> hours;
         for(auto t : pair_of_times){
             QString str = " :" + t[3];
-            //            qDebug() << str;
             findAllSubstrs(str, ":", hours);
         }
         map<QString, int> name_num;
@@ -115,7 +114,6 @@ bool MainWindow::on_actionLoad_data_triggered()
                 asset_num = res->second;
             }else{
                 asset_num = name_num.size();
-                qDebug() << t[3] << name_num.size();
 
                 name_num.insert(make_pair(t[3], name_num.size()));
             }
@@ -146,19 +144,12 @@ bool MainWindow::on_actionLoad_data_triggered()
             pair_count++;
             collision.push_back(c);
         }
-        qDebug() << name_num;
         NUM_REQS = name_num.size();
-        auto res = get_values_by_conflicts(collision);
+        auto res = getValuesByConflicts(collision);
         NUM_WINS = res.first;
         NUM_OF_CONFLICTS = res.second;
         data = collision;
-        qDebug() << NUM_REQS << NUM_WINS << NUM_OF_CONFLICTS;
         return true;
-
-        //        time tt{30, 23, 5, 10, 7, 2020};
-        //        auto timeU = xtmtot(&tt);
-        //        qDebug() << timeU;
-
     }
     return false;
 }
@@ -200,8 +191,6 @@ void MainWindow::on_actionSave_triggered()
             qDebug() << "Error";
         }
     }
-
-
 }
 
 void MainWindow::on_actionSave_data_triggered()
@@ -227,7 +216,6 @@ void MainWindow::on_actionSave_data_triggered()
 
                 }
                 stream << "\r\n";
-
             }
             for (int k = 0; k < NUM_REQS; k++) {
 
@@ -249,20 +237,12 @@ void MainWindow::on_actionSave_data_triggered()
 
 void MainWindow::on_actionRun_triggered()
 {
-    qDebug() << data_loaded << "?";
     main_func(ui, data, data_loaded);
 }
 
 void MainWindow::on_InputAndStart_clicked()
 {
-    bool check = MainWindow::on_actionCorrect_data_triggered();
-    if(!check){
-        QMessageBox messageBox;
-        messageBox.critical(0,"Error","Введенные данные некорректны!");
-        messageBox.setFixedSize(500,200);
-        return;
-    }
-    check = MainWindow::on_actionLoad_data_triggered();
+    bool check = MainWindow::on_actionLoad_data_triggered();
     if(!check){
         QMessageBox messageBox;
         messageBox.critical(0,"Error","Введенные данные некорректны!");
@@ -272,25 +252,6 @@ void MainWindow::on_InputAndStart_clicked()
     MainWindow::on_actionRun_triggered();
 
 }
-
-bool MainWindow::on_actionCorrect_data_triggered()
-{
-    bool result = false;
-    DataRequest* wForm = new DataRequest;
-    wForm->exec();
-    while(!wForm->getClickFlag()){
-        ;;
-    }
-    if(wForm->getResult()){
-        result = true;
-        NUM_REQS = wForm->getNumReq();
-        NUM_WINS = wForm->getNumWin();
-        NUM_OF_CONFLICTS = wForm->getNumOfConflicts();
-    }
-    delete wForm;
-    return result;
-}
-
 
 void MainWindow::on_InputAndStart_2_clicked()
 {

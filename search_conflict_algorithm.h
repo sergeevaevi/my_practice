@@ -49,12 +49,10 @@ public:
     void setAssetName(QString nm);
     void setAssetNum(int nm);
     int number_of_windows = 0;
-//    int getNumOfWindow() const;
-//    void setNumOfWindow(int value);
 };
 
 
-pair<int, int> get_values_by_conflicts(vector<Schedule> all_satellites);
+pair<int, int> getValuesByConflicts(vector<Schedule> all_satellites);
 
 void setBySearchingConflicts(vector<Schedule> all_satellites, Conflict * ConflictWinSubset, Contact * C);
 

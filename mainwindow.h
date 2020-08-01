@@ -39,8 +39,6 @@ private slots:
 
     void on_InputAndStart_clicked();
 
-    bool on_actionCorrect_data_triggered();
-
     void on_InputAndStart_2_clicked();
 
 private:
