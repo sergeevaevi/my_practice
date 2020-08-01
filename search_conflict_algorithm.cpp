@@ -159,41 +159,67 @@ void search_conflicts(vector<Schedule> all_satellites/*Conflict * ConflictWinSub
     ConflictWinSubset[24].lpConfW[1] = &C[1].Win[13];
 */
     map<int, int> windows_numbers;
+    map<int, int> windows_numbers_for_each;
     Schedule d;
     qDebug() << all_satellites.size();
     //    vector<Сollision> collisions;// = parseFile();
     for(auto c: all_satellites){
         WINDOWS_BY_REQUEST[c.getAssetNum()]++;
-//        auto find = windows_numbers.find(c.getAssetNum());
-//        if(find != windows_numbers.end()){
-//            find->second++;
-//        }else{
-//            windows_numbers.insert(make_pair(c.getAssetNum(), 0));
-//        }
+
     }
-    time t;
-    int conflicts_num = 0;
+    int num = 0;
     for(int i = 0; i < all_satellites.size(); i++){
-        int collision_num = 0;
         auto find = windows_numbers.find(all_satellites[i].getAssetNum());
+        num = 0;
         if(find != windows_numbers.end()){
             find->second++;
+            num = find->second;
         }else{
             windows_numbers.insert(make_pair(all_satellites[i].getAssetNum(), 0));
         }
+        windows_numbers_for_each.insert(make_pair(i, num));
+    }
+    time t;
+    int all_conflicts_num = 0;
+    int skip = 1;
+    for(int i = 0; i < all_satellites.size(); i+=skip){
+        skip = 1;
+        int collision_num = 0;
+
+//        auto ins = windows_numbers.insert(make_pair(all_satellites[i].getAssetNum(), 0));
+//        if(ins.second){
+//            qDebug() << ins.first->second << all_satellites[i].getAssetName() << "!";
+//        }else{
+//            ins.first->second++;
+//            qDebug() << ins.first->second << all_satellites[i].getAssetName();
+//        }
         for(int j = i+1; j < all_satellites.size(); j++){
-            auto find = windows_numbers.find(all_satellites[j].getAssetNum());
-            if(find == windows_numbers.end()){
-                windows_numbers.insert(make_pair(all_satellites[j].getAssetNum(), 0));
-            }
+
             if(!checkForCollisions(all_satellites[i], all_satellites[j])){
-                qDebug() << "ConflictWinSubset[" << conflicts_num <<  "].lpConfW[" << collision_num <<
-                            "]  ==>  &C[" << all_satellites[i].getAssetNum() << "].Win[" << windows_numbers.find(all_satellites[i].getAssetNum())->second << "];" <<
-                            all_satellites[i].getAssetName()<< all_satellites[i].getAssetNum() << all_satellites[j].getAssetName();
-                qDebug() << "ConflictWinSubset[" << conflicts_num <<  "].lpConfW[" << collision_num+1 <<
-                            "]  ==>  &C[" << all_satellites[j].getAssetNum() << "].Win[" << windows_numbers.find(all_satellites[j].getAssetNum())->second << "];" <<
+//                auto find = windows_numbers.find(all_satellites[j].getAssetNum());
+//                if(find == windows_numbers.end()){
+//                    qDebug() << ins.first->second << all_satellites[i].getAssetName() << "!";
+//                    windows_numbers.insert(make_pair(all_satellites[j].getAssetNum(), 0));
+//                }else{
+//                    qDebug() << ins.first->second << all_satellites[i].getAssetName();
+//                   ins.first->second++;
+//                }
+                if(collision_num != 0){
+                    skip++;
+                    all_conflicts_num--;
+
+                }else{
+                    qDebug() ;
+                    qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num <<
+                                "]  ==>  &C[" << all_satellites[i].getAssetNum() << "].Win[" << windows_numbers_for_each.find(i)->second << "];" <<
+                                all_satellites[i].getAssetName()<< all_satellites[i].getAssetNum() << all_satellites[j].getAssetName();
+                    skip = 1;
+                }
+
+                qDebug() << "ConflictWinSubset[" << all_conflicts_num <<  "].lpConfW[" << collision_num+1 <<
+                            "]  ==>  &C[" << all_satellites[j].getAssetNum() << "].Win[" << windows_numbers_for_each.find(j)->second << "];" <<
                          all_satellites[j].getAssetName() << all_satellites[j].getAssetNum() << all_satellites[i].getAssetName() ;
-                qDebug() ;
+
 //                qDebug() << "1 st";
 //                xttotm(&t, all_satellites[i].getTimeAccessStart());
 //                print_time(&t);
@@ -210,12 +236,13 @@ void search_conflicts(vector<Schedule> all_satellites/*Conflict * ConflictWinSub
 //                qDebug() << "============";
                 // ConflictWinSubset[collisions[i].getAssetNum()].lpConfW[collision_num] = &C[collisions[i].getAssetNum()].Win[collisions[i].number_of_collisions];
                 collision_num++;
-                conflicts_num++;
+                all_conflicts_num++;
 
             }
+
         }
         all_satellites[i].number_of_windows++;
-
+        skip = collision_num + 1;
     }
 }
 
@@ -290,6 +317,16 @@ void Schedule::setAssetNum(int nm)
 {
     asset_num = nm;
 }
+
+//int Schedule::getNumOfWindow() const
+//{
+//    return num_of_window;
+//}
+
+//void Schedule::setNumOfWindow(int value)
+//{
+//    num_of_window = value;
+//}
 
 int Schedule::getAssetNum()
 {

@@ -49,6 +49,8 @@ public:
     void setAssetName(QString nm);
     void setAssetNum(int nm);
     int number_of_windows = 0;
+//    int getNumOfWindow() const;
+//    void setNumOfWindow(int value);
 };
 
 void search_conflicts(vector<Schedule> all_satellites);

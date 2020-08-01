@@ -102,15 +102,15 @@ bool MainWindow::on_actionLoad_data_triggered()
         QVector<QVector<QString>> hours;
         for(auto t : pair_of_times){
             QString str = " :" + t[3];
-//            qDebug() << str;
+            //            qDebug() << str;
             findAllSubstrs(str, ":", hours);
         }
 
-//        for(auto s : hours){
-//            qDebug() << "in";
-//            qDebug() << "    " << s;
-//            qDebug() << "out";
-//        }
+        //        for(auto s : hours){
+        //            qDebug() << "in";
+        //            qDebug() << "    " << s;
+        //            qDebug() << "out";
+        //        }
         map<QString, int> name_num;
         int asset_num = -1, pair_count = 0;
         vector<Schedule> collision;
@@ -129,11 +129,13 @@ bool MainWindow::on_actionLoad_data_triggered()
             }
             c.setAssetNum(name_num.size());
 
-//            auto res = name_num.insert(make_pair(t[3], asset_num));
-//            if(res.second){
-//                c.setAssetNum(asset_num);
-//                asset_num++;
-//            }
+            auto ins = name_num.insert(make_pair(t[3], asset_num));
+            if(ins.second){
+                c.setAssetNum(asset_num);
+                asset_num++;
+            }else{
+                c.setAssetNum(ins.first->second);
+            }
             QString day = pair_of_times[pair_count][0];
             QString month = pair_of_times[pair_count][1];
             QString year = pair_of_times[pair_count][2];
