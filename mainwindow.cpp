@@ -17,8 +17,7 @@ MainWindow::MainWindow(QWidget *parent)
     int h = ui->img->height();
     ui->img->setPixmap(pix.scaled(w, h));
     ui->front_img->setPixmap(pix.scaled(w, h));
-    //ui->img->hide();
-    // main_func(ui);
+    ui->statusbar->hide();
 
 }
 
@@ -256,6 +255,11 @@ void MainWindow::on_InputAndStart_clicked()
 void MainWindow::on_InputAndStart_2_clicked()
 {
     main_func(ui, data, data_loaded);
+}
+
+void MainWindow::on_action_2_triggered()
+{
+    QApplication::quit();
 }
 
 

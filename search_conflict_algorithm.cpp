@@ -67,9 +67,6 @@ pair<int, int> getValuesByConflicts(vector<Schedule> all_satellites){
         all_satellites[i].number_of_windows = num;
         windows_numbers_for_each.insert(make_pair(i, num));
     }
-    for(i = 0; i < all_satellites.size(); i++){
-        qDebug() << i << all_satellites[i].getAssetName() << all_satellites[i].number_of_windows;
-    }
 
     int all_conflicts_num = 0;
     int skip = 1;

@@ -41,6 +41,8 @@ private slots:
 
     void on_InputAndStart_2_clicked();
 
+    void on_action_2_triggered();
+
 private:
     Ui::MainWindow *ui;
     bool data_loaded = false;

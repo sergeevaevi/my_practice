@@ -25,6 +25,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset>
+    <normaloff>img/ico.ico</normaloff>img/ico.ico</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">background-color: Black; </string>
   </property>
@@ -78,7 +82,7 @@
   border-radius: 100px;
   background-color:black;
   box-shadow: inset rgba(0,0,0,.6) 0 -2px 5px, inset rgba(252,255,255,.7) 0 2px 5px, rgba(0,0,0,.8) 0 2px 5px -1px;
-  color: rgb(0,79,86);
+  color: rgb(0,179,186);
   user-select: none;</string>
     </property>
     <property name="text">
@@ -142,6 +146,8 @@
     <addaction name="actionRun"/>
     <addaction name="actionSave"/>
     <addaction name="actionSave_data"/>
+    <addaction name="separator"/>
+    <addaction name="action_2"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="styleSheet">
@@ -201,6 +207,11 @@
   <action name="actionCorrect_data">
    <property name="text">
     <string>Корректировка значений...</string>
+   </property>
+  </action>
+  <action name="action_2">
+   <property name="text">
+    <string>Выход</string>
    </property>
   </action>
  </widget>
