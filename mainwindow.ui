@@ -167,9 +167,16 @@
     </property>
     <addaction name="actionLoad_data"/>
    </widget>
+   <widget class="QMenu" name="menu_2">
+    <property name="title">
+     <string>Визуализация</string>
+    </property>
+    <addaction name="plot"/>
+   </widget>
    <addaction name="menuFile"/>
    <addaction name="menu"/>
    <addaction name="menuAbout"/>
+   <addaction name="menu_2"/>
   </widget>
   <widget class="QStatusBar" name="statusbar">
    <property name="styleSheet">
@@ -212,6 +219,11 @@
   <action name="action_2">
    <property name="text">
     <string>Выход</string>
+   </property>
+  </action>
+  <action name="plot">
+   <property name="text">
+    <string>Отрисовка графика</string>
    </property>
   </action>
  </widget>

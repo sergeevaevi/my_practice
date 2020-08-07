@@ -38,8 +38,8 @@ typedef struct tagR // comm request
 } Request;
 
 typedef struct tagWindow {
-    int t_AOS; // time of Asquisition of signal
-    int t_LOS; // time of Lost of signal
+    long t_AOS; // time of Asquisition of signal
+    long t_LOS; // time of Lost of signal
     int G; // Ground station ID
     bool is_available; //if we want to include it in schedule
     bool is_final;//if it is really part of the final schedule

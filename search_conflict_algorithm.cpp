@@ -45,7 +45,7 @@ bool checkForCollisions(Schedule i, Schedule j){
     return false;
 }
 
-pair<int, int> getValuesByConflicts(vector<Schedule> all_satellites){
+pair<int, int> getValuesByConflicts(vector<Schedule>& all_satellites){
     map<int, int> windows_numbers;
     map<int, int> windows_numbers_for_each;
     Schedule d;
@@ -64,6 +64,7 @@ pair<int, int> getValuesByConflicts(vector<Schedule> all_satellites){
         if(num > max_num_of_win){
             max_num_of_win = num;
         }
+//        qDebug() << num;
         all_satellites[i].number_of_windows = num;
         windows_numbers_for_each.insert(make_pair(i, num));
     }

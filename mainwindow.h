@@ -28,6 +28,7 @@ public:
     bool isDataLoaded();
     void setDataLoaded(bool val);
 
+    std::vector<Schedule> result;
 private slots:
     bool on_actionLoad_data_triggered();
 
@@ -42,6 +43,8 @@ private slots:
     void on_InputAndStart_2_clicked();
 
     void on_action_2_triggered();
+
+    void on_plot_triggered();
 
 private:
     Ui::MainWindow *ui;

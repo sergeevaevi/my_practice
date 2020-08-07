@@ -141,14 +141,14 @@ static int calc_gamma2(Contact *C, Request *R) {
 }
 
 void setWindowsByRequestByExample(int *WINDOWS_BY_REQUEST){
-        WINDOWS_BY_REQUEST[0]=13;
-        WINDOWS_BY_REQUEST[1]=14;
-        WINDOWS_BY_REQUEST[2]=12;
-        WINDOWS_BY_REQUEST[3]=12;
-        WINDOWS_BY_REQUEST[4]=14;
-        WINDOWS_BY_REQUEST[5]=13;
-        WINDOWS_BY_REQUEST[6]=12;
-        WINDOWS_BY_REQUEST[7]=12;
+    WINDOWS_BY_REQUEST[0]=13;
+    WINDOWS_BY_REQUEST[1]=14;
+    WINDOWS_BY_REQUEST[2]=12;
+    WINDOWS_BY_REQUEST[3]=12;
+    WINDOWS_BY_REQUEST[4]=14;
+    WINDOWS_BY_REQUEST[5]=13;
+    WINDOWS_BY_REQUEST[6]=12;
+    WINDOWS_BY_REQUEST[7]=12;
 }
 
 void setConflictsByExample(Conflict * ConflictWinSubset, Contact * C){
@@ -260,13 +260,16 @@ void setConflictsByExample(Conflict * ConflictWinSubset, Contact * C){
 }
 
 void copy(Contact* C_final, Contact* C){
+//    qDebug() << "fuck";
     for (int i = 0; i < NUM_REQS; i++) {
+        C_final[i].num_wins = C[i].num_wins;
         for (int j = 0; j < C[i].num_wins; j++) {
             C_final[i].Win[j].is_final = C[i].Win[j].is_final;
             C_final[i].Win[j].is_available = C[i].Win[j].is_available;
             C_final[i].Win[j].G = C[i].Win[j].G;
             C_final[i].Win[j].t_AOS = C[i].Win[j].t_AOS;
             C_final[i].Win[j].t_LOS = C[i].Win[j].t_LOS;
+//            qDebug() << C_final[i].Win[j].t_AOS;
         }
     }
 }
@@ -308,10 +311,33 @@ void printConflict(Conflict* C){
     printf("\n");
 }
 
+void setScheduleFromWindow(Window w, Schedule &s, int num_w){
+    s.setTimeAccessStart(w.t_AOS);
+    s.setTimeAccessEnd(w.t_LOS);
+    s.number_of_windows = num_w;
+}
+
+void addResult(Contact * C_final, vector<Schedule>& res){
+    res.clear();
+    for(int j = 0; j < NUM_WINS;j++){
+        for(int i = 0; i < NUM_REQS;i++){
+            Schedule s;
+            if(C_final[i].Win[j].is_final && j < C_final[i].num_wins ){
+                setScheduleFromWindow(C_final[i].Win[j], s, j);
+                qDebug() << "OK" << i << j << C_final[i].Win[j].t_AOS << j;
+            }
+            else{
+                setScheduleFromWindow(C_final[i].Win[j], s, NUM_WINS+1);
+                qDebug() << "Not ok" << j;
+            }
+            res.push_back(s);
+        }
+    }
+}
 
 void addLabels(Ui::MainWindow * ui, Contact * C, Contact * C_final, int * qqq, QVector<QLabel*>& labels){
     //ui->front_img->hide();
-//    QVector<QLabel*> labels;
+    //    QVector<QLabel*> labels;
     int count = 0;
     for(int j = 0; j < NUM_WINS;j++){
         for(int i = 0; i < NUM_REQS;i++){
@@ -343,9 +369,8 @@ void addLabels(Ui::MainWindow * ui, Contact * C, Contact * C_final, int * qqq, Q
 }
 
 
-QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, bool is_data_loaded) {
+QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, std::vector<Schedule> &result, bool is_data_loaded) {
     int *WINDOWS_BY_REQUEST;
-
     WINDOWS_BY_REQUEST = (int*)malloc(NUM_REQS * sizeof(int));
 
     ///this shit must be rewritten later
@@ -412,20 +437,33 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
         R[i].ts = 0;
         R[i].dur = 0;
         //
+
         for (j = 0; j < C[i].num_wins; j++){
             C[i].Win[j].G = GS_3;
-            if(is_data_loaded){
-                int a_num = data[i].getAssetNum();
-                int w_num = data[i].getAssetNum();
-                C[a_num].Win[w_num].t_AOS = data[i].getTimeAccessStart();
-                C[a_num].Win[w_num].t_LOS = data[i].getTimeAccessEnd();
-            }else{
+            if(!is_data_loaded){
                 C[i].Win[j].t_AOS = 0;
                 C[i].Win[j].t_LOS = 0;
             }
         }
     }
+    if(is_data_loaded){
 
+        for (j = 0; j < data.size(); j++){
+            int a_num = data[j].getAssetNum();
+            int w_num = data[j].number_of_windows;
+            C[a_num].Win[w_num].t_AOS = data[j].getTimeAccessStart();
+            C[a_num].Win[w_num].t_LOS = data[j].getTimeAccessEnd();
+            qDebug() <<i << j <<  a_num << w_num << C[a_num].Win[w_num].t_AOS ;
+        }
+    }
+    //гавно какое-то что-то с индексами это точно, так что потом
+
+    qDebug() << "---------------" ;
+    for (i = 0; i < NUM_REQS; i++) {
+        for (j = 0; j < C[i].num_wins; j++){
+            qDebug() <<i << j <<  C[i].Win[j].t_AOS ;
+        }
+    }
     //    //********** set all as available  ***************
 
     for (i = 0; i < NUM_REQS; i++) {
@@ -447,14 +485,12 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
         }
     }
 
+    // ************* Optimization: 'is_final' flag variation ***************************
     if(is_data_loaded){
         setBySearchingConflicts(data, ConflictWinSubset, C);
     }else{
         setConflictsByExample(ConflictWinSubset, C);
     }
-
-
-    // ************* Optimization: 'is_final' flag variation ***************************
 
     int gamma_max = -500000; // initial value
     for (int next_var = 0; next_var < NUM_REQS; next_var++) {
@@ -504,10 +540,19 @@ QVector<QLabel*> main_func(Ui::MainWindow * ui, std::vector<Schedule> &data, boo
         qqq[i] = summ; // actual number of assigned contact windows Cij for request Ri
         summ = 0;
     }
-
     ui->front_img->hide();
     QVector<QLabel*> labels;
     addLabels(ui, C, C_final, qqq, labels);
+    qDebug() << "!!!!!!!!!!!!!!!!";
+    for (i = 0; i < NUM_REQS; i++) {
+        for (j = 0; j < C[i].num_wins; j++) {
+            if(C_final[i].Win[j].is_final){
+                qDebug() <<  C_final[i].Win[j].t_AOS << i << j;
+            }
+        }
+    }
+
+    addResult(C_final, result);
 
     // free all memory
     for (i = 0; i < NUM_REQS; i++) {

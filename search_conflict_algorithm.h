@@ -5,25 +5,6 @@
 #include <vector>
 #include <structure.h>
 #include <QString>
-//typedef struct tagWindow {
-//    int t_AOS; // time of Asquisition of signal
-//    int t_LOS; // time of Lost of signal
-//    int G; // Ground station ID
-//    bool is_available; //if we want to include it in schedule
-//    bool is_final;//if it is really part of the final schedule
-//} Window;
-
-//typedef struct tagC // comm window
-//{
-//    int num_wins; // number of comm windows for request
-//    Window *Win;
-//   // Window Win[NUM_WINS]; // window parameters
-//} Contact;
-
-//typedef struct tagConflict {
-//    Window **lpConfW; // conflict windows
-//   // Window *lpConfW[NUM_REQS]; // conflict windows
-//} Conflict;
 
 
 using namespace std;
@@ -52,7 +33,7 @@ public:
 };
 
 
-pair<int, int> getValuesByConflicts(vector<Schedule> all_satellites);
+pair<int, int> getValuesByConflicts(vector<Schedule>& all_satellites);
 
 void setBySearchingConflicts(vector<Schedule> all_satellites, Conflict * ConflictWinSubset, Contact * C);
 

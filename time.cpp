@@ -82,3 +82,12 @@ void print_time(time *t)
 {
     qDebug() << t->tm_mday << "/" << t->tm_mon << "/" << t->tm_year << " " << t->tm_hour << ":" << t->tm_min << ":" << t->tm_sec;
 }
+
+QString get_time(time *t)
+{
+    QString h_time(t->tm_hour);
+    QString m_time(t->tm_min);
+    QString s_time(t->tm_sec);
+    QString d_time(t->tm_mday);
+    return h_time+":"+m_time+":"+s_time+"-"+d_time;
+}

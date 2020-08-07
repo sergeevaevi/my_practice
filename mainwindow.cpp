@@ -7,6 +7,7 @@
 #include <main_function.h>
 #include <search_conflict_algorithm.h>
 
+
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
@@ -148,6 +149,9 @@ bool MainWindow::on_actionLoad_data_triggered()
         NUM_WINS = res.first;
         NUM_OF_CONFLICTS = res.second;
         data = collision;
+//        for(auto o: data){
+//            qDebug() << o.number_of_windows;
+//        }
         return true;
     }
     return false;
@@ -159,7 +163,7 @@ void MainWindow::on_actionSave_triggered()
     if (file.open(QIODevice::WriteOnly))
     {
         QTextStream stream(&file);
-        auto labels = main_func(ui, data, data_loaded);
+        auto labels = main_func(ui, data, result, data_loaded);
         int count = 0;
 
         for(int j = 0; j < NUM_WINS;j++){
@@ -200,7 +204,7 @@ void MainWindow::on_actionSave_data_triggered()
         QFile file(fileName);
         if (file.open(QIODevice::WriteOnly)) {
             QTextStream stream(&file);
-            auto labels = main_func(ui, data, data_loaded);
+            auto labels = main_func(ui, data, result, data_loaded);
             int count = 0;
 
             for(int j = 0; j < NUM_WINS;j++){
@@ -236,7 +240,7 @@ void MainWindow::on_actionSave_data_triggered()
 
 void MainWindow::on_actionRun_triggered()
 {
-    main_func(ui, data, data_loaded);
+    main_func(ui, data, result, data_loaded);
 }
 
 void MainWindow::on_InputAndStart_clicked()
@@ -248,13 +252,14 @@ void MainWindow::on_InputAndStart_clicked()
         messageBox.setFixedSize(500,200);
         return;
     }
+
     MainWindow::on_actionRun_triggered();
 
 }
 
 void MainWindow::on_InputAndStart_2_clicked()
 {
-    main_func(ui, data, data_loaded);
+    main_func(ui, data, result, data_loaded);
 }
 
 void MainWindow::on_action_2_triggered()
@@ -263,3 +268,18 @@ void MainWindow::on_action_2_triggered()
 }
 
 
+
+void MainWindow::on_plot_triggered()
+{
+
+
+        DataRequest* wForm = new DataRequest(this);
+        if(data_loaded){
+            wForm->plotResult(result, NUM_WINS, NUM_REQS);
+
+        }
+        wForm->exec();
+
+        delete wForm;
+
+}

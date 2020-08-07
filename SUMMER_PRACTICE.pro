@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui charts
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -34,8 +34,7 @@ HEADERS += \
 
 FORMS += \
     datarequest.ui \
-    mainwindow.ui \
-    structure.ui
+    mainwindow.ui
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin

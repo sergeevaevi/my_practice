@@ -6,11 +6,12 @@
 #include <cstddef>
 #include <map>
 #include <string>
+#include <QString>
 typedef	unsigned short			u16_t;
 typedef	unsigned long			u32_t;
 typedef	signed short			s16_t;
 typedef	signed long             s32_t;
-#define BYTE unsigned char
+
 
     // DEF: standard signed format
     // UNDEF: non-standard unsigned format
@@ -24,17 +25,17 @@ typedef	signed long             s32_t;
 
 struct time
 {       /* date and time components */
-    BYTE	tm_sec;
-    BYTE	tm_min;
-    BYTE	tm_hour;
-    BYTE	tm_mday;
-    BYTE	tm_mon;
+    unsigned char	tm_sec;
+    unsigned char	tm_min;
+    unsigned char	tm_hour;
+    unsigned char	tm_mday;
+    unsigned char	tm_mon;
     u16_t	tm_year;
 };
 
 void xttotm(struct time *t, xtime_t secs);
 xtime_t xtmtot(struct time *t);
 void print_time(struct time *t);
-
+QString get_time(struct time *t);
 
 #endif // TIME_H
